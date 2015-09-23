@@ -244,7 +244,7 @@ aggregation definition and a pre-configured `fieldBasedAggregation`. Both method
 You can nest aggregations by providing a parent name.
 
 * `aggregation($name, array $aggregationDefinition, $parentPath = NULL)` -- generic method to add a $aggregationDefinition under a path $parentPath with the name $name
-* `fieldBasedAggregation($name, $field, $type = "terms", $parentPath = NULL)` -- adds a simple filed based Aggregation of type $type with name $name under path $parentPath. Used for simple aggregations like sum, avg, min, max or terms
+* `fieldBasedAggregation($field, $name = "aggregations", $type = "terms", $parentPath = NULL)` -- adds a simple filed based Aggregation of type $type with name $name under path $parentPath. Used for simple aggregations like sum, avg, min, max or terms
 
 
 ### Examples
@@ -252,7 +252,7 @@ You can nest aggregations by providing a parent name.
 To add an average aggregation you can use the fieldBasedAggregation. This snippet would add an average aggregation for
 a property price:
 ```
-nodes = ${Search.query(site)...fieldBasedAggregation("avgprice", "price", "avg").execute()}
+nodes = ${Search.query(site)...fieldBasedAggregation("price", "avgprice", "avg").execute()}
 ```
 Now you can access your aggregations inside your fluid template with 
 ```
@@ -263,7 +263,7 @@ Now you can access your aggregations inside your fluid template with
 In this scenario you could have a node that represents a product with the properties price and color. If you would like
 to know the average price for all your colors you just nest an aggregation in your TypoScript:
 ```
-nodes = ${Search.query(site)...fieldBasedAggregation("colors", "color").fieldBasedAggregation("avgprice", "price", "avg", "colors").execute()}
+nodes = ${Search.query(site)...fieldBasedAggregation("color", "colors").fieldBasedAggregation("price", "avgprice", "avg", "colors").execute()}
 ```
 The first `fieldBasedAggregation` will add a simple terms aggregation (https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html)
 with the name colors. So all different colors of your nodetype will be listed here. 
@@ -271,7 +271,7 @@ The second `fieldBasedAggregation` will add another sub-aggregation named avgpri
 
 You can nest even more aggregations like this:
 ```
-fieldBasedAggregation("anotherAggregation", "field", "avg", "colors.avgprice")
+fieldBasedAggregation("field", "anotherAggregation", "avg", "colors.avgprice")
 ```
 
 #### Add a custom aggregation
@@ -301,7 +301,7 @@ prototype(Vendor.Name:FilteredProductList) {
 	}
 	
 	# Search for all products that matches your queryFilter and add aggregations
-	filter = ${Search.query(site).nodeType("Vendor.Name:Product").queryFilterMultiple(this.searchFilter, "must").fieldBasedAggregation("color", "color").fieldBasedAggregation("size", "size").execute()}
+	filter = ${Search.query(site).nodeType("Vendor.Name:Product").queryFilterMultiple(this.searchFilter, "must").fieldBasedAggregation("color", "colors").fieldBasedAggregation("size", "sizes").execute()}
 
     # Add more filter if get/post params are set
     searchFilter.color = ${request.arguments.color}
@@ -389,6 +389,10 @@ Simple suggestion that returns a suggestion based on the sent term
 
 ```
 suggestions = $(Search.query(site)...termSuggestions('someTerm')}
+```
+You can access your suggestions inside your fluid template with 
+```
+{nodes.aggregations}
 ```
 
 ### Add a custom suggestion

@@ -402,7 +402,7 @@ class ElasticSearchQueryBuilder implements QueryBuilderInterface, ProtectedConte
 	 * aggregations like terms
 	 *
 	 * Example Usage to create a terms aggregation for a property color:
-	 * nodes = ${Search....fieldBasedAggregation("colors", "color").execute()}
+	 * nodes = ${Search....fieldBasedAggregation("color").execute()}
 	 *
 	 * Access all aggregation data with {nodes.aggregations} in your fluid template
 	 *
@@ -412,7 +412,7 @@ class ElasticSearchQueryBuilder implements QueryBuilderInterface, ProtectedConte
 	 * @param null $parentPath
 	 * @return $this
 	 */
-	public function fieldBasedAggregation($name, $field, $type = "terms", $parentPath = NULL) {
+	public function fieldBasedAggregation($field, $name = 'aggregations', $type = 'terms', $parentPath = NULL) {
 		$aggregationDefinition = array(
 			$type => array(
 				'field' => $field
@@ -434,7 +434,7 @@ class ElasticSearchQueryBuilder implements QueryBuilderInterface, ProtectedConte
 	 *   }
 	 * }
 	 *
-	 * nodes = ${Search....aggregation("color", this.aggregationDefinition).execute()}
+	 * nodes = ${Search....aggregation("colors", this.aggregationDefinition).execute()}
 	 *
 	 * Access all aggregation data with {nodes.aggregations} in your fluid template
 	 * 
@@ -445,7 +445,7 @@ class ElasticSearchQueryBuilder implements QueryBuilderInterface, ProtectedConte
 	 * @throws QueryBuildingException
 	 */
 	public function aggregation($name, array $aggregationDefinition, $parentPath = NULL) {
-		if(!array_key_exists("aggregations", $this->request)) {
+		if(!array_key_exists('aggregations', $this->request)) {
 			$this->request['aggregations'] = array();
 		}
 
@@ -474,9 +474,9 @@ class ElasticSearchQueryBuilder implements QueryBuilderInterface, ProtectedConte
 		// Find the parentPath
 		$path =& $this->request['aggregations'];
 
-		foreach(explode(".", $parentPath) as $subPart) {
+		foreach(explode('.', $parentPath) as $subPart) {
 			if($path == NULL || !array_key_exists($subPart, $path)) {
-				throw new QueryBuildingException("The parent path ".$subPart." could not be found when adding a sub aggregation");
+				throw new QueryBuildingException('The parent path '.$subPart.' could not be found when adding a sub aggregation');
 			}
 			$path =& $path[$subPart]['aggregations'];
 		}
