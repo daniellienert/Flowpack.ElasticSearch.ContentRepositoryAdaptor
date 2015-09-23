@@ -486,6 +486,62 @@ class ElasticSearchQueryBuilder implements QueryBuilderInterface, ProtectedConte
 	}
 
 	/**
+	 * This method is used to create a simple term suggestion.
+	 *
+	 * Example Usage of a term suggestion
+	 *
+	 * nodes = ${Search....suggestion("aTerm"}
+	 *
+	 * Access all suggestions data with {nodes.suggestions} in your fluid template
+	 *
+	 * @param $name
+	 * @param $text
+	 * @param string $field
+	 * @return $this
+	 */
+	public function termSuggestions($text, $field = '_all' , $name = 'suggestions'){
+		$suggestionDefinition = array(
+			'text' => $text,
+			'term' => array(
+				'field' => $field
+			)
+		);
+
+		$this->suggestions($name, $suggestionDefinition);
+		return $this;
+	}
+
+	/**
+	 * This method is used to create any kind of suggestion.
+	 *
+	 * Example Usage of a term suggestion for the fulltext search
+	 *
+	 * suggestionDefinition = TYPO3.TypoScript:RawArray {
+	 * 	 text = "some text"
+	 *   terms = TYPO3.TypoScript:RawArray {
+	 *     field = "body"
+	 *   }
+	 * }
+	 *
+	 * nodes = ${Search....suggestion("my-suggestions", this.aggregationDefinition).execute()}
+	 *
+	 * Access all suggestions data with {nodes.suggestions} in your fluid template
+	 *
+	 * @param $name
+	 * @param array $suggestionDefinition
+	 * @return $this
+	 */
+	public function suggestions($name, array $suggestionDefinition){
+		if(!array_key_exists("suggest", $this->request)) {
+			$this->request['suggest'] = array();
+		}
+
+		$this->request['suggest'][$name] = $suggestionDefinition;
+
+		return $this;
+	}
+
+	/**
 	 * Get the ElasticSearch request as we need it
 	 *
 	 * @return array

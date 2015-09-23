@@ -179,6 +179,21 @@ class ElasticSearchQueryResult implements QueryResultInterface, ProtectedContext
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getSuggestions() {
+		$this->initialize();
+		if(count($this->result['suggest']) === 1) {
+			$suggestArray = current($this->result['suggest']);
+
+			if(count($suggestArray) === 1){
+				return current($suggestArray);
+			}
+		}
+		return $this->result['suggest'];
+	}
+
+	/**
 	 * Returns the ElasticSearch "hit" (e.g. the raw content being transferred back from ElasticSearch)
 	 * for the given node.
 	 *
