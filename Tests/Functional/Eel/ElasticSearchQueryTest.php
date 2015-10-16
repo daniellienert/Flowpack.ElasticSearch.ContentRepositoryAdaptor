@@ -152,9 +152,9 @@ class ElasticSearchQueryTest extends \TYPO3\Flow\Tests\FunctionalTestCase
 
         $result = $this->queryBuilder->query($this->context->getRootNode())->termSuggestions($titleSuggestionKey, "title")->execute()->getSuggestions();
 
-        $this->assertArrayHasKey("suggestions", $result);
+        $this->assertArrayHasKey("options", $result);
 
-        $this->assertCount(1, $result['suggestions']['options']);
+        $this->assertCount(1, $result['option']);
 
         $expectedChickenBucket = array(
             'text' => 'chicken',
